@@ -11,6 +11,7 @@ class ColorsViewModel: ObservableObject {
     @Published var file: File? = nil
     @Published var nodes: [Node] = []
     @Published var fileKey: String = "wxc1NIgZj8FXeJmWTZhJCu"
+    @Published var showSettings: Bool = false
 
     init (_ dummyData: Bool = false) {
         if dummyData {
@@ -30,6 +31,24 @@ struct ColorsView: View {
     ]
 
     var body: some View {
+        #if os(iOS)
+        NavigationView {
+            contentView
+                .navigationBarTitle("ProjectS")
+                .navigationBarItems(trailing: settingsIcon)
+                .sheet(isPresented: $viewModel.showSettings, content: {
+                    SettingsView(defaults: defaults)
+                })
+        }
+        #endif
+
+        #if os(macOS)
+        contentView
+        #endif
+
+    }
+
+    var contentView: some View {
         VStack(spacing: 20) {
             if defaults.isFigmaConnected {
                 HStack {
@@ -64,7 +83,15 @@ struct ColorsView: View {
                 Text("Connect with Figma on Preference")
             }
         }
-        .frame(width: 500, height: 300)
+    }
+
+    var settingsIcon: some View {
+        Button(action: {
+            viewModel.showSettings = true
+        }, label: {
+            Image.init(systemName: "gear")
+                .font(Font.system(.title2))
+        })
     }
 
     func getColor(for fill: Fills) -> Color? {

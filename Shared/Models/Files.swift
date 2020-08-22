@@ -76,10 +76,12 @@ struct FillColor: Decodable {
     let a: Double
 
     var color: Color {
-        #if !os(macOS)
+        #if os(iOS)
         return Color.init(red: r, green: g, blue: b, opacity: a)
         #endif
+        #if os(macOS)
         let nsColor = NSColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: CGFloat(a))
         return Color(nsColor)
+        #endif
     }
 }

@@ -8,12 +8,27 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject var defaults: AppDefaults
+    @Environment(\.presentationMode) var presentationMode
 
+    @StateObject var defaults: AppDefaults
     @State var token: String = ""
 
     var body: some View {
-        VStack {
+        #if os(iOS)
+        NavigationView {
+            contentView
+                .navigationBarTitle("Settings", displayMode: .inline)
+                .navigationBarItems(leading: cancelButton)
+        }
+        #endif
+
+        #if os(macOS)
+        contentView
+        #endif
+    }
+
+    var contentView: some View {
+        VStack(spacing: 20) {
             if !defaults.isFigmaConnected {
                 Button("Connect With Figma", action: onTapFigmaLogin)
                 Text("OR")
@@ -29,6 +44,15 @@ struct SettingsView: View {
                 Button("Disconnect with Figma", action: onTapDisconnectFigma)
             }
         }
+        .padding()
+    }
+
+    var cancelButton: some View {
+        Button.init(action: {
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Text("Cancel")
+        })
     }
 
     func onTapDisconnectFigma() {
@@ -39,7 +63,7 @@ struct SettingsView: View {
     func onTapFigmaLogin() {
         FigmaClient.shared.authroize { (result) in
             switch result {
-            case .success(let _):
+            case .success( _):
                 print("login success")
                 defaults.isFigmaConnected = true
             case .failure(let error):

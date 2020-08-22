@@ -34,7 +34,7 @@ final class FigmaClient {
             state: FigmaSecrets.state
         ) { result in
             switch result {
-            case .success(let (credential, _, _)):
+            case .success( (_, _, _)):
                 completion(.success(true))
                 //self.getFile("wxc1NIgZj8FXeJmWTZhJCu")
             case .failure(let error):
